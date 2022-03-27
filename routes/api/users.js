@@ -4,7 +4,20 @@ const User = require("../../models/User");
 
 router.get("/health", (req, res) => res.json({ msg: "users api is working" }));
 
-router.post("/addUser", async (req, res) => {
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    let user = await User.findOne({ email, password });
+    if (user) {
+      return res.status(200).json({ msg: "logged in successfully" });
+    }
+    return res.status(404).json({ msg: "Invalid cred" });
+  } catch (err) {
+    return res.status(500).json("Server error");
+  }
+});
+
+router.post("/signUp", async (req, res) => {
   const { name, email, password, contactNumber } = req.body;
   try {
     let user = await User.findOne({ email });
