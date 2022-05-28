@@ -76,17 +76,17 @@ router.post("/addProduct", async (req, res) => {
 router.get("/product", async (req, res) => {
   const allProducts = await Product.find();
   const filters = req.query;
-  const filteredProduct = allProducts.filter((product) => {
+  let filteredProduct = [];
+  filteredProduct = allProducts.filter((product) => {
     let isValid = true;
     for (key in filters) {
-      console.log(key, product[key], filters[key]);
       isValid = isValid && product[key] === filters[key];
     }
     return isValid;
   });
   if (filteredProduct.length === 0) {
-    return res.send("No results found");
+    return res.send({ msg: "FAILURE", filteredProduct });
   }
-  res.send(filteredProduct);
+  return res.json({ msg: "SUCCESS", filteredProduct });
 });
 module.exports = router;
