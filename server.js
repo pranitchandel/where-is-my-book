@@ -19,7 +19,7 @@ app.use(passport.initialize());
 //Passport config
 require("./config/passport")(passport);
 
-app.use("api/users", users);
-app.use("api/products", products);
+app.use("/api/users", users);
+app.use("/api/products", products);
 const port = process.env.PORT;
 app.listen(port, () => console.log(`Server running on port ${port}`));
