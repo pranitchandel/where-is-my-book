@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
+const Product = require("../../models/Product");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
@@ -96,4 +97,36 @@ router.get(
   }
 );
 
+router.post("/addWishlist/:userId/:productId", async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.userId });
+    const productId = req.params.productId;
+    for (let prodId in user.wishList) {
+      if (productId === user.wishList[prodId].productId) {
+        return res.json({ msg: "Already added to wishlist" });
+      }
+    }
+    user.wishList.push({ productId });
+    user
+      .save()
+      .then((user) => res.json(user))
+      .catch((err) => console.log(err));
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+router.get("/getWishlist/:userId", async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.userId });
+    if (!user) {
+      res.json({ msg: "User not found" });
+      return;
+    }
+    res.json(user.wishList);
+  } catch (err) {
+    res.status(500).send("Server error");
+  }
+});
 module.exports = router;
