@@ -103,16 +103,45 @@ router.post("/addWishlist/:userId/:productId", async (req, res) => {
     const productId = req.params.productId;
     for (let prodId in user.wishList) {
       if (productId === user.wishList[prodId].productId) {
-        return res.json({ msg: "Already added to wishlist" });
+        return res.json({
+          msg: "FAILURE",
+          wishlist: user.wishList,
+        });
       }
     }
     user.wishList.push({ productId });
     user
       .save()
-      .then((user) => res.json(user))
+      .then((user) =>
+        res.json({
+          msg: "SUCCESS",
+          wishlist: user.wishList,
+        })
+      )
       .catch((err) => console.log(err));
   } catch (err) {
     console.log(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+router.get("/checkWishlist/:userId/:productId", async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.userId });
+    const productId = req.params.productId;
+    for (let prodId in user.wishList) {
+      if (productId === user.wishList[prodId].productId) {
+        return res.json({
+          msg: "FAILURE",
+          wishlist: user.wishList,
+        });
+      }
+    }
+    res.json({
+      msg: "SUCCESS",
+      wishlist: user.wishList,
+    });
+  } catch (err) {
     res.status(500).send("Server error");
   }
 });
@@ -124,7 +153,7 @@ router.get("/getWishlist/:userId", async (req, res) => {
       res.json({ msg: "User not found" });
       return;
     }
-    res.json(user.wishList);
+    res.json({ msg: "SUCCESS", wishlist: user.wishList });
   } catch (err) {
     res.status(500).send("Server error");
   }
