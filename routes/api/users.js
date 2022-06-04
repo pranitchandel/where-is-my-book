@@ -14,7 +14,6 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     let user = await User.findOne({ email });
-    console.log(user);
     if (!user) return res.status(404).json({ msg: "User not found" });
 
     //check password
@@ -25,7 +24,7 @@ router.post("/login", async (req, res) => {
         jwt.sign(
           payload,
           process.env.SECRETKEY,
-          { expiresIn: 3600 },
+          { expiresIn: 60 },
           (err, token) => {
             res.json({
               sucess: true,
@@ -110,6 +109,38 @@ router.post("/addWishlist/:userId/:productId", async (req, res) => {
       }
     }
     user.wishList.push({ productId });
+    user
+      .save()
+      .then((user) =>
+        res.json({
+          msg: "SUCCESS",
+          wishlist: user.wishList,
+        })
+      )
+      .catch((err) => console.log(err));
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+router.post("/deleteFromWishlist/:userId/:productId", async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.userId });
+    const productId = req.params.productId;
+    // for (let prodId in user.wishList) {
+    //   if (productId === user.wishList[prodId].productId) {
+    //     return res.json({
+    //       msg: "FAILURE",
+    //       wishlist: user.wishList,
+    //     });
+    //   }
+    // }
+    const newWishlist = user.wishList.filter(
+      (wish) => wish.productId !== productId
+    );
+    user.wishList = newWishlist;
+
     user
       .save()
       .then((user) =>
