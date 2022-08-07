@@ -128,14 +128,6 @@ router.post("/deleteFromWishlist/:userId/:productId", async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.userId });
     const productId = req.params.productId;
-    // for (let prodId in user.wishList) {
-    //   if (productId === user.wishList[prodId].productId) {
-    //     return res.json({
-    //       msg: "FAILURE",
-    //       wishlist: user.wishList,
-    //     });
-    //   }
-    // }
     const newWishlist = user.wishList.filter(
       (wish) => wish.productId !== productId
     );
