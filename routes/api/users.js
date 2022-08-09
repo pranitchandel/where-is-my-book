@@ -15,7 +15,6 @@ router.post("/login", async (req, res) => {
   try {
     let user = await User.findOne({ email });
     if (!user) return res.status(404).json({ msg: "User not found" });
-
     //check password
     bcrypt.compare(password, user.password).then((isMatch) => {
       if (isMatch) {
@@ -24,7 +23,7 @@ router.post("/login", async (req, res) => {
         jwt.sign(
           payload,
           process.env.SECRETKEY,
-          { expiresIn: 60 },
+          { expiresIn: 60000 },
           (err, token) => {
             res.json({
               sucess: true,
